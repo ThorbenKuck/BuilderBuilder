@@ -34,6 +34,7 @@ public class CreateBuilderProcessor extends AbstractProcessor {
     public synchronized void init(ProcessingEnvironment processingEnvironment) {
         super.init(processingEnvironment);
         filer = processingEnvironment.getFiler();
+        AbstractTemplate.filer = filer;
     }
 
     @Override
@@ -62,12 +63,17 @@ public class CreateBuilderProcessor extends AbstractProcessor {
                 .getQualifiedName()
                 .toString();
 
-        TypeSpec builderClass = TypeSpec.classBuilder(builderName)
-                .addModifiers(Modifier.PUBLIC)
-                .build();
+        FileTemplate.forClass(builderName)
+            .setPackage(packageName)
+            .alterClassTemplate(classTemplate -> classTemplate.addModifiers(Modifier.PUBLIC, Modifier.FINAL))
+            .write(filer);
 
-        JavaFile.builder(packageName, builderClass)
-                .build()
-                .writeTo(filer);
+//        TypeSpec builderClass = TypeSpec.classBuilder(builderName)
+//                .addModifiers(Modifier.PUBLIC)
+//                .build();
+//
+//        JavaFile.builder(packageName, builderClass)
+//                .build()
+//                .writeTo(filer);
     }
 }
