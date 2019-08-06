@@ -1,7 +1,0 @@
-{modifiers} {type} {name} {
-  {fields}
-
-  {constructor}
-
-  {methods}
-}

@@ -1,3 +1,0 @@
-{visibility} {modifier} {return} {name}({parameters}) {
-  {body}
-}

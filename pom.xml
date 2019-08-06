@@ -132,13 +132,6 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
-                    <!--<annotationProcessorPaths>-->
-                        <!--<path>-->
-                            <!--<groupId>com.github.thorbenkuck</groupId>-->
-                            <!--<artifactId>di-processor</artifactId>-->
-                            <!--<version>0.3-SNAPSHOT</version>-->
-                        <!--</path>-->
-                    <!--</annotationProcessorPaths>-->
                 </configuration>
                 <version>3.7.0</version>
             </plugin>
