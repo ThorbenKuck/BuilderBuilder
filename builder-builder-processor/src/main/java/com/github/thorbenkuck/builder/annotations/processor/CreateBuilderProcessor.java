@@ -6,7 +6,9 @@ import com.github.thorbenkuck.builder.annotations.SetterName;
 import com.github.thorbenkuck.builder.annotations.ValidateState;
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.*;
+import com.squareup.javapoet.CodeBlock.Builder;
 
+import javax.annotation.Nullable;
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
@@ -14,7 +16,6 @@ import java.io.IOException;
 import java.util.*;
 
 @AutoService(Processor.class)
-@SupportedAnnotationTypes("com.github.thorbenkuck.builder.annotations.CreateBuilder")
 public class CreateBuilderProcessor extends AbstractProcessor {
 
     private Filer filer;
@@ -136,7 +137,7 @@ public class CreateBuilderProcessor extends AbstractProcessor {
                 throw new IllegalStateException("The Validation method has to have zero arguments!");
             }
             CodeBlock.Builder validateCode = CodeBlock.builder();
-            if (executableElement.getModifiers().contains(Modifier.FINAL)) {
+            if (executableElement.getModifiers().contains(Modifier.PRIVATE)) {
                 validateCode.addStatement("$T.invokeMethod(value, $S)", ReflectionUtils.class, executableElement.getSimpleName().toString());
             } else {
                 validateCode.addStatement("value.$L()", executableElement.getSimpleName().toString());
@@ -173,17 +174,22 @@ public class CreateBuilderProcessor extends AbstractProcessor {
                     .returns(ClassName.get(packageName, builderName))
                     .addParameter(TypeName.get(variable.asType()), "newValue");
 
-            if (variable.getModifiers().contains(Modifier.PRIVATE)) {
-                setterBuilder.addCode(CodeBlock.builder()
-                        .addStatement("$T.setField(value, $S, newValue)", ReflectionUtils.class, variable.getSimpleName().toString())
-                        .addStatement("return this")
-                        .build());
-            } else {
-                setterBuilder.addCode(CodeBlock.builder()
-                        .addStatement("value.$L = newValue", variable.getSimpleName().toString())
-                        .addStatement("return this")
-                        .build());
+            String variableName = variable.getSimpleName().toString();
+
+            CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
+
+            if(variable.getAnnotation(Nullable.class) == null) {
+                codeBlockBuilder.addStatement("$T.notNull(newValue, $S)", Validate.class, "The field " + variableName + " may not be null!");
             }
+
+            if (variable.getModifiers().contains(Modifier.PRIVATE)) {
+                codeBlockBuilder.addStatement("$T.setField(value, $S, newValue)", ReflectionUtils.class, variableName);
+            } else {
+                codeBlockBuilder.addStatement("value.$L = newValue", variableName);
+            }
+
+            codeBlockBuilder.addStatement("return this");
+            setterBuilder.addCode(codeBlockBuilder.build());
 
             setterMethods.add(setterBuilder.build());
         }

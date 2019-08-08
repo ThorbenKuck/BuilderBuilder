@@ -25,6 +25,23 @@ public class ReflectionUtils {
         }
     }
 
+    public static Object readField(Object object, String fieldName) {
+        try {
+            Field field = object.getClass().getDeclaredField(fieldName);
+            boolean access = field.isAccessible();
+            try {
+                field.setAccessible(true);
+                return field.get(object);
+            } catch (IllegalAccessException e) {
+                throw new IllegalStateException(e);
+            } finally {
+                field.setAccessible(access);
+            }
+        } catch (NoSuchFieldException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     public static void invokeMethod(Object object, String name, Object... parameters) {
         for(Object o : parameters) {
             Objects.requireNonNull(o, "Reflection based method invocation may only be used with non null instances");
