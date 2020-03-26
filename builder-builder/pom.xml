@@ -3,7 +3,7 @@
 
     <groupId>com.github.thorbenkuck</groupId>
     <artifactId>builder-builder</artifactId>
-    <version>01-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
 
     <developers>
         <developer>

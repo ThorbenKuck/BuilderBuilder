@@ -1,12 +1,15 @@
+package test;
+
 public class Test {
 
   public static void main(String[] args) {
     ToBuild build = ToBuildBuilder.newInstance()
         .withSuperDuperName("SuperDuper")
-        .withExternalLameName("External")
-        .withShouldNotBeFilledLikeEver(null)
+        .withShouldNotBeFilledLikeEver("Filled regardless")
+        .withExternalLameName("Is not lame")
         .build();
 
     System.out.println(build);
   }
+
 }
